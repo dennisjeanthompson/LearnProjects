@@ -1,0 +1,111 @@
+<html><head><base href="https://websim.creation.engine/" target="_blank"><title>Roman Numeral Converter</title>
+    <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 1rem;
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    #output {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    </style>
+    </head>
+    <body>
+    <div class="container">
+      <h1>Roman Numeral Converter</h1>
+      <input type="number" id="number" placeholder="Enter a number (1-3999)">
+      <button id="convert-btn">Convert</button>
+      <div id="output"></div>
+    </div>
+    
+    <script>
+    const convertBtn = document.getElementById('convert-btn');
+    const output = document.getElementById('output');
+    const input = document.getElementById('number');
+    
+    convertBtn.addEventListener('click', () => {
+      const num = parseInt(input.value);
+      
+      if (isNaN(num) || input.value.trim() === '') {
+        output.textContent = 'Please enter a valid number';
+      } else if (num < 1) {
+        output.textContent = 'Please enter a number greater than or equal to 1';
+      } else if (num > 3999) {
+        output.textContent = 'Please enter a number less than or equal to 3999';
+      } else {
+        output.textContent = convertToRoman(num);
+      }
+    });
+    
+    function convertToRoman(num) {
+      const romanNumerals = [
+        { value: 1000, numeral: 'M' },
+        { value: 900, numeral: 'CM' },
+        { value: 500, numeral: 'D' },
+        { value: 400, numeral: 'CD' },
+        { value: 100, numeral: 'C' },
+        { value: 90, numeral: 'XC' },
+        { value: 50, numeral: 'L' },
+        { value: 40, numeral: 'XL' },
+        { value: 10, numeral: 'X' },
+        { value: 9, numeral: 'IX' },
+        { value: 5, numeral: 'V' },
+        { value: 4, numeral: 'IV' },
+        { value: 1, numeral: 'I' }
+      ];
+    
+      let result = '';
+      
+      for (let i = 0; i < romanNumerals.length; i++) {
+        while (num >= romanNumerals[i].value) {
+          result += romanNumerals[i].numeral;
+          num -= romanNumerals[i].value;
+        }
+      }
+      
+      return result;
+    }
+    </script>
+    </body></html>

@@ -1,0 +1,95 @@
+<html><head><base href="https://websim.creation.engine/" target="_blank"><title>Telephone Number Validator</title>
+    <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 1rem;
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin: 0 0.5rem;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    #results-div {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    </style>
+    </head>
+    <body>
+    <div class="container">
+      <h1>Telephone Number Validator</h1>
+      <input type="text" id="user-input" placeholder="Enter a phone number">
+      <button id="check-btn">Check</button>
+      <button id="clear-btn">Clear</button>
+      <div id="results-div"></div>
+    </div>
+    
+    <script>
+    const userInput = document.getElementById('user-input');
+    const checkBtn = document.getElementById('check-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const resultsDiv = document.getElementById('results-div');
+    
+    checkBtn.addEventListener('click', () => {
+      if (userInput.value.trim() === '') {
+        alert('Please provide a phone number');
+        return;
+      }
+      
+      const phoneNumber = userInput.value;
+      const isValid = validatePhoneNumber(phoneNumber);
+      
+      resultsDiv.textContent = isValid 
+        ? `Valid US number: ${phoneNumber}`
+        : `Invalid US number: ${phoneNumber}`;
+    });
+    
+    clearBtn.addEventListener('click', () => {
+      userInput.value = '';
+      resultsDiv.textContent = '';
+    });
+    
+    function validatePhoneNumber(phoneNumber) {
+      const regex = /^(1\s?)?(\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}$/;
+      return regex.test(phoneNumber);
+    }
+    </script>
+    </body></html>

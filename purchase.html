@@ -1,0 +1,193 @@
+<html><head><base href="https://websim.dev/"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Cash Register App</title>
+    <style>
+      body {
+        font-family: 'Roboto', sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f8ff;
+        color: #333;
+      }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      }
+      .container {
+        background-color: #fff;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      }
+      .input-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #34495e;
+      }
+      input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #bdc3c7;
+        border-radius: 6px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
+      input[type="number"]:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+        outline: none;
+      }
+      button {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      button:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+      }
+      #change-due {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #ecf0f1;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+      }
+      #price-display {
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 30px;
+        color: #2c3e50;
+        font-weight: bold;
+      }
+    </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Cash Register App</h1>
+        <div id="price-display">Price: $<span id="item-price"></span></div>
+        <div class="input-group">
+          <label for="cash">Cash Provided:</label>
+          <input type="number" id="cash" step="0.01" min="0" required>
+        </div>
+        <button id="purchase-btn">Make Purchase</button>
+        <div id="change-due"></div>
+      </div>
+    
+      <script>
+        let price = 19.5;
+        let cid = [
+          ["PENNY", 0.5],
+          ["NICKEL", 0],
+          ["DIME", 0],
+          ["QUARTER", 0],
+          ["ONE", 0],
+          ["FIVE", 0],
+          ["TEN", 0],
+          ["TWENTY", 0],
+          ["ONE HUNDRED", 0]
+        ];
+    
+        const cashInput = document.getElementById('cash');
+        const purchaseBtn = document.getElementById('purchase-btn');
+        const changeDueElement = document.getElementById('change-due');
+        const itemPriceElement = document.getElementById('item-price');
+    
+        itemPriceElement.textContent = price.toFixed(2);
+    
+        const currencyUnit = {
+          "PENNY": 0.01,
+          "NICKEL": 0.05,
+          "DIME": 0.1,
+          "QUARTER": 0.25,
+          "ONE": 1,
+          "FIVE": 5,
+          "TEN": 10,
+          "TWENTY": 20,
+          "ONE HUNDRED": 100
+        };
+    
+        function checkCashRegister(price, cash, cid) {
+          let changeDue = cash - price;
+          let totalCID = cid.reduce((acc, curr) => acc + curr[1], 0);
+          totalCID = Math.round(totalCID * 100) / 100;
+          changeDue = Math.round(changeDue * 100) / 100;
+          
+          if (totalCID < changeDue) {
+            return {status: "INSUFFICIENT_FUNDS", change: []};
+          }
+          
+          if (totalCID === changeDue) {
+            return {status: "CLOSED", change: cid};
+          }
+          
+          let change = [];
+          cid = cid.reverse();
+          
+          for (let elem of cid) {
+            let curr = elem[0];
+            let currSum = elem[1];
+            let amount = 0;
+            while (changeDue >= currencyUnit[curr] && currSum > 0) {
+              amount += currencyUnit[curr];
+              changeDue -= currencyUnit[curr];
+              currSum -= currencyUnit[curr];
+              changeDue = Math.round(changeDue * 100) / 100;
+            }
+            if (amount !== 0) {
+              change.push([curr, amount]);
+            }
+          }
+          
+          if (changeDue > 0) {
+            return {status: "INSUFFICIENT_FUNDS", change: []};
+          }
+          
+          return {status: "OPEN", change: change};
+        }
+    
+        function displayResult(result) {
+          let changeString = `Status: ${result.status}`;
+          if (result.status === "OPEN" || result.status === "CLOSED") {
+            result.change.forEach(item => {
+              changeString += ` ${item[0]}: $${item[1].toFixed(2)}`;
+            });
+          }
+          changeDueElement.textContent = changeString;
+        }
+    
+        purchaseBtn.addEventListener('click', function() {
+          const cash = parseFloat(cashInput.value);
+          
+          if (isNaN(cash) || cash < price) {
+            alert("Customer does not have enough money to purchase the item");
+            return;
+          }
+          
+          if (cash === price) {
+            changeDueElement.textContent = "No change due - customer paid with exact cash";
+            return;
+          }
+          
+          const result = checkCashRegister(price, cash, JSON.parse(JSON.stringify(cid)));
+          displayResult(result);
+        });
+      </script>
+    </body>
+    </html>
